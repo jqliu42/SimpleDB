@@ -17,6 +17,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Threadsafe
  */
 public class Catalog {
+	
+	private class Table{
+		private DbFile file;
+		private String name;
+		private String pkeyField;
+		
+		public Table(DbFile file, String name, String pkeyField) {
+			this.file = file;
+			this.name = name;
+			this.pkeyField = pkeyField;
+		}
+	}
+	
+	private HashMap<Integer,Table> id2table;
 
     /**
      * Constructor.
@@ -24,6 +38,7 @@ public class Catalog {
      */
     public Catalog() {
         // some code goes here
+    	id2table = new HashMap<Integer,Table>();
     }
 
     /**
@@ -37,6 +52,7 @@ public class Catalog {
      */
     public void addTable(DbFile file, String name, String pkeyField) {
         // some code goes here
+    	id2table.put(file.getId(), new Table(file,name,pkeyField));
     }
 
     public void addTable(DbFile file, String name) {
@@ -60,7 +76,13 @@ public class Catalog {
      */
     public int getTableId(String name) throws NoSuchElementException {
         // some code goes here
-        return 0;
+        for(int key: id2table.keySet()) {
+        	if(id2table.get(key).name.equals(name)) {
+        		return key;
+        	}
+        }
+        
+        throw new NoSuchElementException();
     }
 
     /**
@@ -71,7 +93,7 @@ public class Catalog {
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
         // some code goes here
-        return null;
+        return id2table.get(tableid).file.getTupleDesc();
     }
 
     /**
@@ -82,27 +104,29 @@ public class Catalog {
      */
     public DbFile getDatabaseFile(int tableid) throws NoSuchElementException {
         // some code goes here
-        return null;
+        return id2table.get(tableid).file;
     }
 
     public String getPrimaryKey(int tableid) {
         // some code goes here
-        return null;
+        return id2table.get(tableid).pkeyField;
     }
 
     public Iterator<Integer> tableIdIterator() {
         // some code goes here
-        return null;
+        return id2table.keySet().iterator();
     }
 
     public String getTableName(int id) {
         // some code goes here
-        return null;
+        return id2table.get(id).name;
     }
     
     /** Delete all tables from the catalog */
     public void clear() {
         // some code goes here
+    	id2table.clear();
+    	
     }
     
     /**
