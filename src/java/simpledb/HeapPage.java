@@ -53,8 +53,10 @@ public class HeapPage implements Page {
        
         try{
             // allocate and read the actual records of this page
-            for (int i=0; i<tuples.length; i++)
+            for (int i=0; i<tuples.length; i++) {
                 tuples[i] = readNextTuple(dis,i);
+            }
+            
         }catch(NoSuchElementException e){
             e.printStackTrace();
         }
@@ -79,7 +81,10 @@ public class HeapPage implements Page {
     private int getHeaderSize() {        
         
         // some code goes here
-        return (int)Math.ceil(getNumTuples()/8);
+    	//这里出现过bug, 要乘与1.0转化成浮点数
+    	return (int) Math.ceil(getNumTuples()*1.0/8);
+    	
+       
                  
     }
     
@@ -122,17 +127,19 @@ public class HeapPage implements Page {
     private Tuple readNextTuple(DataInputStream dis, int slotId) throws NoSuchElementException {
         // if associated bit is not set, read forward to the next tuple, and
         // return null.
+    	
         if (!isSlotUsed(slotId)) {
+        	
             for (int i=0; i<td.getSize(); i++) {
                 try {
                     dis.readByte();
                 } catch (IOException e) {
+                	
                     throw new NoSuchElementException("error reading empty tuple");
                 }
             }
             return null;
         }
-
         // read fields in the tuple
         Tuple t = new Tuple(td);
         RecordId rid = new RecordId(pid, slotId);
@@ -146,7 +153,7 @@ public class HeapPage implements Page {
             e.printStackTrace();
             throw new NoSuchElementException("parsing error!");
         }
-        System.out.println("sdvfdsvfvdfv");
+       // System.out.println(slotId+" done");
         return t;
     }
 
@@ -296,11 +303,16 @@ public class HeapPage implements Page {
      * Returns true if associated slot on this page is filled.
      */
     public boolean isSlotUsed(int i) {
+    	
         // some code goes here
+    	
     	int quot = i/8;
     	int remainder  =i%8;
+    	
     	byte bitidx = header[quot];
+    	
     	int bit = (bitidx>>remainder) & 1;
+    	
         return bit == 1;
     }
 
