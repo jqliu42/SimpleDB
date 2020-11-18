@@ -82,18 +82,14 @@ public class HeapFile implements DbFile {
 			int read = rf.read(bytes,0,BufferPool.getPageSize());
 			
 			HeapPageId id = new HeapPageId(tableId, pgNo);
+			rf.close();
 			return new HeapPage(id,bytes);
 			
 		} catch (Exception e) {
 			// TODO: handle exception
-		}finally {
-			try {
-				rf.close();
-			} catch (Exception e2) {
-				// TODO: handle exception
-			}
 		}
-        
+		
+       
         throw new IllegalArgumentException();
     }
 
@@ -108,8 +104,8 @@ public class HeapFile implements DbFile {
      */
     public int numPages() {
         // some code goes here
+    	
         int num = (int)Math.floor(this.f.length()*1.0/BufferPool.getPageSize());
-
         return num;
     }
 
@@ -132,6 +128,7 @@ public class HeapFile implements DbFile {
     // see DbFile.java for javadocs
     public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
+    	
         return new HeapFileIterator(this,tid);
     }
 

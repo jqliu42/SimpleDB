@@ -81,7 +81,9 @@ public class SeqScan implements DbIterator {
     public void open() throws DbException, TransactionAbortedException {
         // some code goes here
     	it = Database.getCatalog().getDatabaseFile(tableid).iterator(tid);
+    	
     	it.open();
+    	
     	
     }
 

@@ -15,13 +15,18 @@ public class HeapFileIterator implements DbFileIterator {
 		// TODO Auto-generated constructor stub
 		this.heapFile = file;
 		this.tid =tid;
+		
 	}
 
 	
 	private Iterator<Tuple> getPageTuples(int pageNumber) throws TransactionAbortedException, DbException{
+		
 		if(pageNumber >= 0 && pageNumber < heapFile.numPages()) {
+			
 			HeapPageId pid = new HeapPageId(heapFile.getId(), pageNumber);
+			
 			HeapPage page = (HeapPage)Database.getBufferPool().getPage(tid, pid, Permissions.READ_ONLY);
+			
 			return page.iterator();
 		}else {
 			throw new DbException("");

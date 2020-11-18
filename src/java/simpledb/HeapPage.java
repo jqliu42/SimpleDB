@@ -50,6 +50,7 @@ public class HeapPage implements Page {
             header[i] = dis.readByte();
         
         tuples = new Tuple[numSlots];
+       
         try{
             // allocate and read the actual records of this page
             for (int i=0; i<tuples.length; i++)
@@ -67,7 +68,7 @@ public class HeapPage implements Page {
     */
     private int getNumTuples() {        
         // some code goes here
-        return (int) Math.floor((BufferPool.getPageSize()*8) / (this.td.getSize() * 8 + 1));
+        return (int) Math.floor((BufferPool.getPageSize()*8*1.0) / (this.td.getSize() * 8 + 1));
 
     }
 
@@ -145,7 +146,7 @@ public class HeapPage implements Page {
             e.printStackTrace();
             throw new NoSuchElementException("parsing error!");
         }
-
+        System.out.println("sdvfdsvfvdfv");
         return t;
     }
 

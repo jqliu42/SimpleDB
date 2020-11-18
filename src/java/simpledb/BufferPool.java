@@ -68,9 +68,12 @@ public class BufferPool {
         // some code goes here
     	if(!pageStore.containsKey(pid.hashCode())) {
     		DbFile dbfile = Database.getCatalog().getDatabaseFile(pid.getTableId());
+    		System.out.println("??!!");
     		Page page = dbfile.readPage(pid);
+    		
     		pageStore.put(pid.hashCode(), page);
     	}
+    	
         return pageStore.get(pid.hashCode());
     }
 

@@ -129,7 +129,7 @@ public class SystemTestUtil {
             }
         }
         iterator.close();
-
+       
         if (!copy.isEmpty()) {
             String msg = "expected to find the following tuples:\n";
             final int MAX_TUPLES_OUTPUT = 10;
@@ -142,6 +142,7 @@ public class SystemTestUtil {
                 msg += "\t" + Utility.listToString(t) + "\n";
                 count += 1;
             }
+           
             Assert.fail(msg);
         }
     }
