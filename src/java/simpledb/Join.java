@@ -12,6 +12,7 @@ public class Join extends Operator {
     private JoinPredicate p;
     private DbIterator child1;
     private DbIterator child2;
+    private Tuple t1;
 
     /**
      * Constructor. Accepts to children to join and the predicate to join them
@@ -106,8 +107,10 @@ public class Join extends Operator {
      */
     protected Tuple fetchNext() throws TransactionAbortedException, DbException {
         // some code goes here
-    	while(child1.hasNext()) {
-    		Tuple t1 = child1.next();
+    	while(child1.hasNext()|| this.t1 != null) {
+    		if(this.child1.hasNext() && this.t1 == null) {
+    			t1 = child1.next();
+    		}
     		while(child2.hasNext()) {
     			Tuple t2 = child2.next();
     			if(p.filter(t1, t2)) {
@@ -124,12 +127,17 @@ public class Join extends Operator {
     					newTuple.setField(i+j, t2.getField(j));
     				}
     				
+    				
     				if(!child2.hasNext()) {
     					child2.rewind();
+    					t1 = null;
     				}
+    				
+    				return newTuple;
     			}
     		}
     		child2.rewind();
+    		t1 = null;
     	}
         return null;
     }
