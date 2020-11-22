@@ -21,7 +21,7 @@ import simpledb.*;
  */
 public class ScanTest extends SimpleDbTestBase {
     private final static Random r = new Random();
-
+ 
     /** Tests the scan operator for a table with the specified dimensions. */
     private void validateScan(int[] columnSizes, int[] rowSizes)
             throws IOException, DbException, TransactionAbortedException {
