@@ -1,11 +1,21 @@
 package simpledb;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Knows how to compute some aggregate over a set of StringFields.
  */
 public class StringAggregator implements Aggregator {
 
     private static final long serialVersionUID = 1L;
+    
+    private int gbfield;
+    private Type gbfieldtype;
+    private int afield;
+    private Op what;
+    
+    private Map<Field,Integer> groupMap;
 
     /**
      * Aggregate constructor
@@ -18,6 +28,14 @@ public class StringAggregator implements Aggregator {
 
     public StringAggregator(int gbfield, Type gbfieldtype, int afield, Op what) {
         // some code goes here
+    	if(!what.equals(Op.COUNT)) {
+    		throw new IllegalArgumentException("Only COUNT is supported for StringAggregator");
+    	}
+    	this.gbfield = gbfield;
+    	this.gbfieldtype = gbfieldtype;
+    	this.afield = afield;
+    	this.what = what;
+    	this.groupMap = new HashMap<>();
     }
 
     /**
@@ -26,6 +44,19 @@ public class StringAggregator implements Aggregator {
      */
     public void mergeTupleIntoGroup(Tuple tup) {
         // some code goes here
+    	StringField afield = (StringField)tup.getField(this.afield);
+    	Field gbField = this.gbfield==NO_GROUPING?null:tup.getField(this.gbfield);
+    	String newValue = afield.getValue();
+    	
+    	if(gbField!=null&&gbField.getType()!=this.gbfieldtype) {
+    		throw new IllegalArgumentException("Given tuple has wrong type");
+    	}
+    	
+    	if(!this.groupMap.containsKey(gbField)) {
+    		this.groupMap.put(gbField, 1);
+    	}else {
+    		this.groupMap.put(gbField,this.groupMap.get(gbField)+1);
+    	}
     }
 
     /**
@@ -38,7 +69,7 @@ public class StringAggregator implements Aggregator {
      */
     public DbIterator iterator() {
         // some code goes here
-        throw new UnsupportedOperationException("please implement me for lab2");
+    	return null;
     }
 
 }

@@ -1,12 +1,24 @@
 package simpledb;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Knows how to compute some aggregate over a set of IntFields.
  */
 public class IntegerAggregator implements Aggregator {
 
     private static final long serialVersionUID = 1L;
+    private int gbfield;
+    private Type gbfieldtype;
+    private int afield;
+    private Op what;
 
+    private Map<Field,Integer> groupMap;
+    private Map<Field,Integer> countMap;
+    private Map<Field, List<Integer>> avgMap;
     /**
      * Aggregate constructor
      * 
@@ -24,6 +36,14 @@ public class IntegerAggregator implements Aggregator {
 
     public IntegerAggregator(int gbfield, Type gbfieldtype, int afield, Op what) {
         // some code goes here
+    	this.gbfield = gbfield;
+    	this.gbfieldtype = gbfieldtype;
+    	this.afield = afield;
+    	this.what = what;
+    	
+    	this.groupMap = new HashMap<>();
+    	this.avgMap = new HashMap<>();
+    	this.countMap = new HashMap<>();
     }
 
     /**
@@ -35,6 +55,77 @@ public class IntegerAggregator implements Aggregator {
      */
     public void mergeTupleIntoGroup(Tuple tup) {
         // some code goes here
+    	IntField aField = (IntField)tup.getField(this.afield);
+    	Field gbField = this.gbfield == NO_GROUPING?null:tup.getField(this.gbfield);
+    	int newValue = aField.getValue();
+    	
+    	if(gbField != null && gbField.getType()!=this.gbfieldtype) {
+    		throw new IllegalArgumentException("Given tuple has wrong type");
+    	}
+    	
+    	switch (this.what) {
+		case MIN: {
+			if(!this.groupMap.containsKey(gbField)) {
+				this.groupMap.put(gbField, newValue);
+			}else {
+				this.groupMap.put(gbField,Math.min(this.groupMap.get(gbField),newValue));
+			}
+			break;
+			
+			
+		}
+		
+		case MAX:{
+			if(!this.groupMap.containsKey(gbField)) {
+				this.groupMap.put(gbField, newValue);
+			}else {
+				this.groupMap.put(gbField,Math.max(this.groupMap.get(gbField),newValue));
+			}
+			break;
+		}
+		
+		case SUM:{
+			if(!this.groupMap.containsKey(gbField)) {
+				this.groupMap.put(gbField, newValue);
+			}else {
+				this.groupMap.put(gbField,this.groupMap.get(gbField)+newValue);
+			}
+			break;
+		}
+		
+		case COUNT:{
+			if(!this.groupMap.containsKey(gbField)) {
+				this.groupMap.put(gbField, 1);
+			}else {
+				this.groupMap.put(gbField,this.groupMap.get(gbField)+1);
+			}
+			break;
+		}
+		
+		case SC_AVG:{
+			// placeholder
+			break;
+		}
+		
+		case SUM_COUNT:{
+			break;
+		}
+		
+		case AVG:{
+			if(!this.avgMap.containsKey(gbField)) {
+				List<Integer> l = new ArrayList<>();
+				l.add(newValue);
+				this.avgMap.put(gbField,l);
+			}else {
+				List<Integer> l = this.avgMap.get(gbField);
+				l.add(newValue);
+			}
+		}
+		
+		default:
+			throw new IllegalArgumentException("Aggregate not supported!");
+		}
+    	
     }
 
     /**
@@ -47,8 +138,12 @@ public class IntegerAggregator implements Aggregator {
      */
     public DbIterator iterator() {
         // some code goes here
-        throw new
-        UnsupportedOperationException("please implement me for lab2");
+        //placeholder
+    	return null;
     }
+    
+    
+    
+    
 
 }
