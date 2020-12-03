@@ -1,8 +1,10 @@
 package simpledb;
 
 import java.io.*;
-
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+
+//import org.graalvm.compiler.nodes.InliningLog.UpdateScope;
 
 /**
  * BufferPool manages the reading and writing of pages into memory from
@@ -138,6 +140,15 @@ public class BufferPool {
         throws DbException, IOException, TransactionAbortedException {
         // some code goes here
         // not necessary for lab1
+    	DbFile f = Database.getCatalog().getDatabaseFile(tableId);
+    	ArrayList<Page> pageList = f.insertTuple(tid, t);
+    	for(Page p: pageList) {
+    		p.markDirty(true, tid);
+    		if(pageStore.size()>numPages) {
+    			evictPage();
+    		}
+    		pageStore.put(p.getId().pageNumber(), p);
+    	}
     }
 
     /**
@@ -156,6 +167,15 @@ public class BufferPool {
         throws DbException, IOException, TransactionAbortedException {
         // some code goes here
         // not necessary for lab1
+    	DbFile f = Database.getCatalog().getDatabaseFile(t.getRecordId().getPageId().getTableId());
+    	ArrayList<Page> pageList = f.deleteTuple(tid, t);
+    	for(Page p: pageList) {
+    		p.markDirty(true, tid);
+    		if(pageStore.size()>numPages) {
+    			evictPage();
+    		}
+    		pageStore.put(p.getId().pageNumber(), p);
+    	}
     }
 
     /**
